@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -35,6 +36,18 @@ func ValidateHostNameOrIP(v string) error {
 		return nil
 	}
 	return fmt.Errorf("invalid format: only valid IP addresses or FQDNs are allowed")
+}
+
+func ValidatePort(v string) error {
+	v = strings.TrimSpace(v)
+	if v == "" {
+		return fmt.Errorf("port is required")
+	}
+	n, err := strconv.Atoi(v)
+	if err != nil || n < 1 || n > 65535 {
+		return fmt.Errorf("invalid port: must be number 1-65535")
+	}
+	return nil
 }
 
 func hasAlpha(s string) bool {

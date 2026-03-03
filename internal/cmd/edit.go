@@ -31,6 +31,10 @@ var editCmd = &cobra.Command{
 		}
 
 		currentHostname, _ := cfg.Get(host, "HostName")
+		currentPort, _ := cfg.Get(host, "Port")
+		if strings.TrimSpace(currentPort) == "" {
+			currentPort = "22"
+		}
 		currentUser, _ := cfg.Get(host, "User")
 		currentIdfile, _ := cfg.Get(host, "IdentityFile")
 
@@ -45,6 +49,15 @@ var editCmd = &cobra.Command{
 			return fmt.Errorf("hostname is required")
 		}
 		if err := sshconfig.ValidateHostNameOrIP(hostname); err != nil {
+			return err
+		}
+
+		port := prompt.Ask(scanner, fmt.Sprintf("Port           [%s]: ", currentPort))
+		port = strings.TrimSpace(port)
+		if port == "" {
+			port = currentPort
+		}
+		if err := sshconfig.ValidatePort(port); err != nil {
 			return err
 		}
 
@@ -66,7 +79,7 @@ var editCmd = &cobra.Command{
 			idfile = def.IdentityFile
 		}
 
-		if err := sshconfig.UpdateHost(cfg, host, hostname, user, idfile); err != nil {
+		if err := sshconfig.UpdateHost(cfg, host, hostname, port, user, idfile); err != nil {
 			return err
 		}
 		if err := sshconfig.Save(cfg); err != nil {

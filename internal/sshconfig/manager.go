@@ -89,7 +89,7 @@ func GetAllHosts(cfg *ssh_config.Config) []string {
 	return hosts
 }
 
-func AppendHost(cfg *ssh_config.Config, host, hostname, user, idfile string) error {
+func AppendHost(cfg *ssh_config.Config, host, hostname, port, user, idfile string) error {
 	pat, err := ssh_config.NewPattern(host)
 	if err != nil {
 		return fmt.Errorf("invalid host pattern %q: %w", host, err)
@@ -99,6 +99,7 @@ func AppendHost(cfg *ssh_config.Config, host, hostname, user, idfile string) err
 		Patterns: []*ssh_config.Pattern{pat},
 		Nodes: []ssh_config.Node{
 			&ssh_config.KV{Key: "HostName", Value: hostname},
+			&ssh_config.KV{Key: "Port", Value: port},
 			&ssh_config.KV{Key: "User", Value: user},
 			&ssh_config.KV{Key: "PreferredAuthentications", Value: "publickey"},
 			&ssh_config.KV{Key: "IdentityFile", Value: idfile},
@@ -108,11 +109,12 @@ func AppendHost(cfg *ssh_config.Config, host, hostname, user, idfile string) err
 	return nil
 }
 
-func UpdateHost(cfg *ssh_config.Config, host, hostname, user, idfile string) error {
+func UpdateHost(cfg *ssh_config.Config, host, hostname, port, user, idfile string) error {
 	for _, h := range cfg.Hosts {
 		for _, pat := range h.Patterns {
 			if pat.String() == host {
 				setKV(h, "HostName", hostname)
+				setKV(h, "Port", port)
 				setKV(h, "User", user)
 				setKV(h, "PreferredAuthentications", "publickey")
 				setKV(h, "IdentityFile", idfile)

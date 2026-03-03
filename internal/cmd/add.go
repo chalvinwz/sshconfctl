@@ -58,6 +58,16 @@ var addCmd = &cobra.Command{
 				continue
 			}
 
+			port := prompt.Ask(scanner, "Port           [22]: ")
+			port = strings.TrimSpace(port)
+			if port == "" {
+				port = "22"
+			}
+			if err := sshconfig.ValidatePort(port); err != nil {
+				fmt.Printf("Error: %v\n", err)
+				continue
+			}
+
 			user := prompt.Ask(scanner, fmt.Sprintf("User           [%s]: ", def.User))
 			user = strings.TrimSpace(user)
 			if user == "" {
@@ -70,7 +80,7 @@ var addCmd = &cobra.Command{
 				idfile = def.IdentityFile
 			}
 
-			if err := sshconfig.AppendHost(cfg, host, hostname, user, idfile); err != nil {
+			if err := sshconfig.AppendHost(cfg, host, hostname, port, user, idfile); err != nil {
 				return err
 			}
 			if err := sshconfig.Save(cfg); err != nil {
