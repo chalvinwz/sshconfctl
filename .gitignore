@@ -1,0 +1,24 @@
+# Binaries
+/sshconfctl
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build/test
+*.test
+*.out
+coverage.out
+
+# Local release artifacts
+dist/
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
